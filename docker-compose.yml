@@ -1,6 +1,13 @@
 version: "3"
 
 services:
+    redis:
+        image: redis:7.2-alpine
+        ports:
+            - $REDIS_PORT:$REDIS_PORT
+        networks:
+            - backend
+
     mongodb:
         image: mongo:5.0.2
         restart: unless-stopped
@@ -16,6 +23,7 @@ services:
 
     server:
         depends_on:
+            - redis
             - mongodb
         build:
             context: ./server
@@ -30,6 +38,8 @@ services:
             - MONGODB_HOST=$MONGODB_HOST
             - MONGO_PORT=$MONGO_PORT
             - JWT_SECRET=$JWT_SECRET
+            - REDIS_PORT=$REDIS_PORT
+            - REDIS_HOST=$REDIS_HOST
         networks:
             - backend
 

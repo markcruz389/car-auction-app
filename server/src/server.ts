@@ -2,11 +2,12 @@ import http from "node:http";
 
 import app from "./app";
 import { mongoConnect } from "./services/mongo";
+import { setCarTypes } from "./models/carType/carType.model";
 
 const PORT = process.env.SERVER_PORT;
 
 const startServer = async () => {
-    await mongoConnect();
+    await Promise.all([setCarTypes(), mongoConnect()]);
 
     const server = http.createServer(app);
     server.listen(PORT, () => console.log(`Listening to port ${PORT}...`));
