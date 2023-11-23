@@ -1,6 +1,6 @@
 import auctions, { AuctionStatus } from "./auction.schema";
 import { AUCTION_STATUS } from "../../_common/constants";
-import { getCarTypeByKey } from "../carType/carType.model";
+import { getCarTypeByKey } from "../car-type/car-type.model";
 
 type AuctionResult = {
     _id: string;
@@ -25,6 +25,10 @@ type CreateAuctionInput = {
     expiryDate: Date;
 };
 
+const getAuctionById = async (_id: string): Promise<AuctionResult | null> => {
+    return await auctions.findById(_id);
+};
+
 const createAuction = async (
     args: CreateAuctionInput
 ): Promise<AuctionResult> => {
@@ -41,4 +45,4 @@ const createAuction = async (
     return { ...data, _id: doc._id };
 };
 
-export { createAuction };
+export { getAuctionById, createAuction };

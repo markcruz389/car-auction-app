@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
-import { getCarTypeByKey } from "../../models/carType/carType.model";
+import { getCarTypeByKey } from "../../models/car-type/car-type.model";
 
 const createAuctionValidator = [
     body("carBrand")
