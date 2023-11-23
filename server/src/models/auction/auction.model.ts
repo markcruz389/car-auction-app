@@ -4,6 +4,7 @@ import { getCarTypeByKey } from "../carType/carType.model";
 
 type AuctionResult = {
     _id: string;
+    userId: string;
     carBrand: string;
     carYear: number;
     carType: string;
@@ -15,6 +16,7 @@ type AuctionResult = {
 };
 
 type CreateAuctionInput = {
+    userId: string;
     carBrand: string;
     carYear: number;
     carType: string;

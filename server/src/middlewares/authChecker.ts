@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
+
 import { USER_ROLE } from "../_common/constants";
+import { IRequestWithUserId } from "../_common/types";
 
 const unauthorized = (res: Response) => {
     return res.status(401).json({ message: "Unauthorized" });
@@ -53,6 +55,7 @@ const userAuthChecker = (req: Request, res: Response, next: NextFunction) => {
         return unauthorized(res);
     }
 
+    (req as IRequestWithUserId).userId = decodedToken._id;
     next();
 };
 

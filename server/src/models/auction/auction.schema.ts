@@ -1,9 +1,10 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, ObjectId, Schema } from "mongoose";
 import { AUCTION_STATUS } from "../../_common/constants";
 
 export type AuctionStatus = "open" | "closed";
 
 interface IAuction extends Document {
+    userId: ObjectId;
     carBrand: string;
     carYear: number;
     carType: string;
@@ -16,6 +17,10 @@ interface IAuction extends Document {
 
 const schema = new Schema<IAuction>(
     {
+        userId: {
+            type: Schema.Types.ObjectId,
+            required: true,
+        },
         carBrand: {
             type: String,
             required: true,

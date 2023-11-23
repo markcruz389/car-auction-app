@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 
 import { createAuction } from "../../models/auction/auction.model";
 import { matchedData } from "express-validator";
+import { IRequestWithUserId } from "../../_common/types";
 
 const httpPostCreateAuction = async (req: Request, res: Response) => {
+    const { userId } = req as IRequestWithUserId;
     const {
         carBrand,
         carYear,
@@ -13,9 +15,8 @@ const httpPostCreateAuction = async (req: Request, res: Response) => {
         expiryDate,
     } = matchedData(req);
 
-    console.log(carType);
-
     const auction = await createAuction({
+        userId,
         carBrand,
         carYear,
         carType,
