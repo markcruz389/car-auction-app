@@ -13,6 +13,8 @@ interface IAuction extends Document {
     expiryDate: Date;
     status: AuctionStatus;
     isDeleted: boolean;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 const schema = new Schema<IAuction>(

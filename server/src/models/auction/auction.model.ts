@@ -1,9 +1,10 @@
 import auctions, { AuctionStatus } from "./auction.schema";
 import { AUCTION_STATUS } from "../../_common/constants";
 import { getCarTypeByKey } from "../car-type/car-type.model";
+import { ObjectId } from "mongoose";
 
 type AuctionResult = {
-    _id: string;
+    _id: ObjectId;
     userId: string;
     carBrand: string;
     carYear: number;
@@ -13,6 +14,8 @@ type AuctionResult = {
     expiryDate: Date;
     status: AuctionStatus;
     isDeleted: boolean;
+    createdAt: Date;
+    updatedAt: Date;
 };
 
 type CreateAuctionInput = {
@@ -42,7 +45,12 @@ const createAuction = async (
 
     const doc = await auctions.create(data);
 
-    return { ...data, _id: doc._id };
+    return {
+        ...data,
+        _id: doc._id,
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt,
+    };
 };
 
 export { getAuctionById, createAuction };
