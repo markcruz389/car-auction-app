@@ -51,7 +51,7 @@ const schema = new Schema<IAuction>(
             default: false,
         },
     },
-    { versionKey: false }
+    { versionKey: false, timestamps: true }
 );
 
 export default mongoose.model<IAuction>("Auction", schema);

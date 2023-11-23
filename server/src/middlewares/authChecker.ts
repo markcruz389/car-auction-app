@@ -21,6 +21,28 @@ const decodeToken = (token: string | undefined) => {
     }
 };
 
+const isLoggedInChecker = (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = decodeToken(req.cookies.access_token);
+    if (decodedToken) {
+        return res.status(400).json({ message: "Already logged in" });
+    }
+
+    next();
+};
+
+const isNotLoggedInChecker = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const decodedToken = decodeToken(req.cookies.access_token);
+    if (!decodedToken) {
+        return unauthorized(res);
+    }
+
+    next();
+};
+
 const userAuthChecker = (req: Request, res: Response, next: NextFunction) => {
     const decodedToken = decodeToken(req.cookies.access_token);
     if (!decodedToken) {
@@ -47,4 +69,9 @@ const adminAuthChecker = (req: Request, res: Response, next: NextFunction) => {
     next();
 };
 
-export { userAuthChecker, adminAuthChecker };
+export {
+    isLoggedInChecker,
+    isNotLoggedInChecker,
+    userAuthChecker,
+    adminAuthChecker,
+};
