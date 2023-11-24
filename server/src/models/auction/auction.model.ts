@@ -1,7 +1,8 @@
+import mongoose, { ObjectId, mongo } from "mongoose";
+
 import auctions, { AuctionStatus } from "./auction.schema";
 import { AUCTION_STATUS } from "../../_common/constants";
 import { getCarTypeByKey } from "../car-type/car-type.model";
-import { ObjectId } from "mongoose";
 
 type AuctionResult = {
     _id: ObjectId;
@@ -34,23 +35,37 @@ const getAuctionById = async (_id: string): Promise<AuctionResult | null> => {
 
 const createAuction = async (
     args: CreateAuctionInput
-): Promise<AuctionResult> => {
-    const carType = (await getCarTypeByKey(args.carType)) as string;
-    const data = {
-        ...args,
-        carType,
-        status: AUCTION_STATUS.CLOSED,
-        isDeleted: false,
-    };
+): Promise<AuctionResult | null> => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    const doc = await auctions.create(data);
+    try {
+        const carType = (await getCarTypeByKey(args.carType)) as string;
 
-    return {
-        ...data,
-        _id: doc._id,
-        createdAt: doc.createdAt,
-        updatedAt: doc.updatedAt,
-    };
+        const data = {
+            ...args,
+            carType,
+            status: AUCTION_STATUS.CLOSED,
+            isDeleted: false,
+        };
+
+        const doc = await auctions.create(data);
+        await session.commitTransaction();
+
+        return {
+            ...data,
+            _id: doc._id,
+            createdAt: doc.createdAt,
+            updatedAt: doc.updatedAt,
+        };
+    } catch (error) {
+        console.error(error);
+        session.abortTransaction();
+    } finally {
+        session.endSession();
+    }
+
+    return null;
 };
 
 export { getAuctionById, createAuction };
