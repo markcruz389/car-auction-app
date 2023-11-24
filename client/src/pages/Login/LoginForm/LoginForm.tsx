@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -12,7 +14,7 @@ import { Label } from "@/components/ui/label";
 
 const LoginForm = () => {
     return (
-        <Card className="w-[350px]">
+        <Card className="w-[450px]">
             <CardHeader>
                 <CardTitle>Login</CardTitle>
                 <CardDescription>Enter your credentials</CardDescription>
@@ -31,8 +33,14 @@ const LoginForm = () => {
                     </div>
                 </form>
             </CardContent>
-            <CardFooter className="flex justify-end">
-                <Button>Login</Button>
+            <CardFooter className="flex flex-col">
+                <div className="mb-2 w-full flex justify-end">
+                    <Button>Login</Button>
+                </div>
+                <div>
+                    <span>Don't have an account yet?</span>{" "}
+                    <Link to="/signup">Sign-up</Link>
+                </div>
             </CardFooter>
         </Card>
     );
