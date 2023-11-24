@@ -42,9 +42,21 @@ services:
             - REDIS_HOST=$REDIS_HOST
         networks:
             - backend
+            - frontend
+
+    client:
+        depends_on:
+            - server
+        build:
+            context: ./client
+        ports:
+            - $CLIENT_LOCAL_PORT:$CLIENT_CONTAINER_PORT
+        networks:
+            - frontend
 
 volumes:
     db:
 
 networks:
     backend:
+    frontend:
