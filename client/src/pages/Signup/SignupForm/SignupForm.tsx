@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
     Card,
@@ -6,13 +8,53 @@ import {
     CardHeader,
     CardDescription,
     CardContent,
-    CardFooter,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+
+const formSchema = z
+    .object({
+        fullName: z.string().min(1),
+        phone: z.string().max(15).min(1),
+        email: z.string().email(),
+        password: z.string().min(6),
+        confirm: z.string(),
+    })
+    .refine((data) => data.password === data.confirm, {
+        message: "Passwords don't match",
+        path: ["confirm"],
+    });
 
 const SignupForm = () => {
+    const { toast } = useToast();
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            fullName: "",
+            phone: "",
+            email: "",
+            password: "",
+            confirm: "",
+        },
+    });
+
+    const onSubmit = (values: z.infer<typeof formSchema>) => {
+        console.log(values);
+        toast({
+            duration: 3000, // ms
+            title: "Successfully created an account",
+        });
+    };
+
     return (
         <Card className="w-[450px]">
             <CardHeader>
@@ -20,36 +62,87 @@ const SignupForm = () => {
                 <CardDescription>Fill up form</CardDescription>
             </CardHeader>
             <CardContent>
-                <form>
-                    <div className="grid w-full items-center gap-4">
-                        <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="fullName">Full name</Label>
-                            <Input id="fullName" />
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-4"
+                    >
+                        <FormField
+                            control={form.control}
+                            name="fullName"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Full name</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="phone"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Phone</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="email"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Email</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="password"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Password</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} type="password" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="confirm"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Confirm Password</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} type="password" />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <div className="flex justify-end">
+                            <Button type="submit">Submit</Button>
                         </div>
-                        <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="phone">Phone</Label>
-                            <Input id="phone" />
-                        </div>
-                        <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="email">Email</Label>
-                            <Input id="email" />
-                        </div>
-                        <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="password">Password</Label>
-                            <Input id="password" type="password" />
-                        </div>
-                        <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="confirmPassword">
-                                Confirm Password
-                            </Label>
-                            <Input id="confirmPassword" type="password" />
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </Form>
             </CardContent>
-            <CardFooter className="flex justify-end">
-                <Button>Signup</Button>
-            </CardFooter>
         </Card>
     );
 };
