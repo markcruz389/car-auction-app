@@ -7,7 +7,14 @@ import { getUserByEmail, createUser } from "../../models/user/user.model";
 import { ERROR_TYPE, errorResponse } from "../../_utils/errorResponse";
 
 const failedLogin = (res: Response) => {
-    return res.status(401).json({ message: "Invalid username or password" });
+    return errorResponse({
+        res,
+        statusCode: 401,
+        errorData: {
+            error: ERROR_TYPE.UNAUTHORIZED,
+            message: "Invalid username or password",
+        },
+    });
 };
 
 const httpGetLogout = (_: Request, res: Response) => {

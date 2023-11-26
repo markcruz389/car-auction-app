@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 
-import apiErrorHandler from "@/utils/apiErrorHandler";
+import apiErrorHandler, { ErrorResponseData } from "@/utils/apiErrorHandler";
 
 const formSchema = z
     .object({
@@ -85,7 +85,7 @@ const SignupForm = () => {
                 "Unexpected Error Occured, try again later";
 
             if (axios.isAxiosError(error)) {
-                const axiosError: AxiosError = error;
+                const axiosError: AxiosError<ErrorResponseData> = error;
                 errorMsg = apiErrorHandler(axiosError);
             } else {
                 console.error("Non-Axios error occurred:", error);
