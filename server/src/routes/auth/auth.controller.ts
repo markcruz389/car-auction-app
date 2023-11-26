@@ -16,7 +16,7 @@ const httpGetLogout = (_: Request, res: Response) => {
 };
 
 const httpPostRegister = async (req: Request, res: Response) => {
-    const { email, password, roles, fullName, phone } = matchedData(req);
+    const { email, password, fullName, phone } = matchedData(req);
 
     const existingUser = await getUserByEmail(email);
     if (existingUser) {
@@ -33,7 +33,6 @@ const httpPostRegister = async (req: Request, res: Response) => {
     const user = await createUser({
         email,
         password,
-        roles,
         fullName,
         phone,
     });

@@ -35,7 +35,7 @@ Object.freeze(ERROR_TYPE);
 
 const errorResponse = (args: CreateJsonErrorArgs) => {
     const { res, statusCode, errorData } = args;
-    return res.status(statusCode).json(errorData);
+    return res.status(statusCode).json({ error: { ...errorData } });
 };
 
 const errorResponseServer = (res: Response) => {

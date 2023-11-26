@@ -14,21 +14,21 @@ const registerValidator = [
         .isLength({ min: 6 })
         .escape()
         .trim(),
-    body("roles")
-        .isArray()
-        .custom((values) => {
-            if (values.length === 0) {
-                return false;
-            }
+    // body("roles")
+    //     .isArray()
+    //     .custom((values) => {
+    //         if (values.length === 0) {
+    //             return false;
+    //         }
 
-            return true;
-        })
-        .withMessage("Must have a role")
-        .custom((values) => {
-            return values.every((value: string) => userRoles.includes(value));
-        })
-        .escape()
-        .trim(),
+    //         return true;
+    //     })
+    //     .withMessage("Must have a role")
+    //     .custom((values) => {
+    //         return values.every((value: string) => userRoles.includes(value));
+    //     })
+    //     .escape()
+    //     .trim(),
     body("fullName")
         .notEmpty()
         .withMessage("Full name required")

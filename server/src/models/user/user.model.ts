@@ -15,7 +15,7 @@ type CreateUserInput = {
     password: string;
     fullName: string;
     phone: string;
-    roles: Array<UserRole>;
+    // roles: Array<UserRole>;
 };
 
 const getUserByEmail = async (
@@ -28,9 +28,13 @@ const createUser = async (args: CreateUserInput): Promise<UserResult> => {
     const { password, ...data } = args;
     const saltRounds = 10;
     const hash = await bcrypt.hash(password, saltRounds);
-    const doc = await users.create({ ...data, password: hash });
+    const doc = await users.create({
+        ...data,
+        password: hash,
+        roles: ["user"],
+    });
 
-    return { ...data, _id: doc._id };
+    return { ...data, _id: doc._id, roles: doc.roles };
 };
 
 export { getUserByEmail, createUser };
