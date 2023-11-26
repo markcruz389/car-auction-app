@@ -1,7 +1,9 @@
+import { useState } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 import {
     Card,
@@ -21,6 +23,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+
+import apiErrorHandler from "@/utils/apiErrorHandler";
 
 const formSchema = z
     .object({
@@ -45,6 +49,7 @@ type RegisterErrorResponse = {
 
 const SignupForm = () => {
     const { toast } = useToast();
+    const navigate = useNavigate();
     const form = useForm<Schema>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -56,11 +61,11 @@ const SignupForm = () => {
         },
     });
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const onSubmit = async (values: Schema) => {
+        setIsSubmitting(true);
         const { fullName, phone, email, password } = values;
-        let title,
-            description: string = "";
-        let isSuccess = true;
 
         try {
             await axios.post(`${API_BASE_URL}/auth/register`, {
@@ -70,43 +75,33 @@ const SignupForm = () => {
                 password,
             });
 
-            title = "Successfully registered";
             form.reset();
+            toast({
+                duration: 3000,
+                title: "Successfully registered",
+            });
+
+            navigate("/login");
         } catch (error) {
-            isSuccess = false;
-            title = "Failed account registration";
-            description = "Server connection error, try again later";
+            let errorMsg: string | null =
+                "Unexpected Error Occured, try again later";
 
             if (axios.isAxiosError(error)) {
                 const axiosError: AxiosError<RegisterErrorResponse> = error;
 
-                if (axiosError.response) {
-                    console.error(
-                        "Server responded with non-2xx status:",
-                        axiosError.response.status
-                    );
-                    console.error("Response data:", axiosError.response.data);
-
-                    description = `${axiosError.response.status}: ${error.message}`;
-                } else if (axiosError.request) {
-                    console.error("No response received from the server");
-                } else {
-                    console.error(
-                        "Error setting up the request:",
-                        axiosError.message
-                    );
-                }
+                errorMsg = apiErrorHandler(axiosError);
             } else {
                 console.error("Non-Axios error occurred:", error);
             }
-        }
 
-        toast({
-            duration: 5000,
-            variant: isSuccess ? "default" : "destructive",
-            title,
-            description,
-        });
+            setIsSubmitting(false);
+            toast({
+                duration: 5000,
+                variant: "destructive",
+                title: "Failed registration process",
+                ...(errorMsg && { description: errorMsg }),
+            });
+        }
     };
 
     return (
@@ -117,84 +112,86 @@ const SignupForm = () => {
             </CardHeader>
             <CardContent>
                 <Form {...form}>
-                    <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-4"
-                    >
-                        <FormField
-                            control={form.control}
-                            name="fullName"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Full name</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                    <fieldset disabled={isSubmitting}>
+                        <form
+                            onSubmit={form.handleSubmit(onSubmit)}
+                            className="space-y-4"
+                        >
+                            <FormField
+                                control={form.control}
+                                name="fullName"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Full name</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <FormField
-                            control={form.control}
-                            name="phone"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Phone</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                            <FormField
+                                control={form.control}
+                                name="phone"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Phone</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Email</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Email</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <FormField
-                            control={form.control}
-                            name="password"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Password</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} type="password" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                            <FormField
+                                control={form.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Password</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} type="password" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <FormField
-                            control={form.control}
-                            name="confirm"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Confirm Password</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} type="password" />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                            <FormField
+                                control={form.control}
+                                name="confirm"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Confirm Password</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} type="password" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
-                        <div className="flex justify-end">
-                            <Button type="submit">Submit</Button>
-                        </div>
-                    </form>
+                            <div className="flex justify-end">
+                                <Button type="submit">Submit</Button>
+                            </div>
+                        </form>
+                    </fieldset>
                 </Form>
             </CardContent>
         </Card>
