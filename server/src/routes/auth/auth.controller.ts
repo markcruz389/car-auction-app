@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import { getUserByEmail, createUser } from "../../models/user/user.model";
+import { ERROR_TYPE, errorResponse } from "../../_utils/errorResponse";
 
 const failedLogin = (res: Response) => {
     return res.status(401).json({ message: "Invalid username or password" });
@@ -19,7 +20,14 @@ const httpPostRegister = async (req: Request, res: Response) => {
 
     const existingUser = await getUserByEmail(email);
     if (existingUser) {
-        return res.status(400).json({ message: "Email already used" });
+        return errorResponse({
+            res,
+            statusCode: 409,
+            errorData: {
+                error: ERROR_TYPE.CONFLICT,
+                message: "Email already exists",
+            },
+        });
     }
 
     const user = await createUser({
@@ -29,10 +37,6 @@ const httpPostRegister = async (req: Request, res: Response) => {
         fullName,
         phone,
     });
-    console.log(user);
-    if (!user) {
-        return res.status(400).json({ message: "Registration failed" });
-    }
 
     return res.status(201).json(user);
 };

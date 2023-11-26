@@ -1,10 +1,10 @@
 import { ObjectId } from "mongoose";
 import bids from "./bid.schema";
-import { getAuctionById } from "../auction/auction.model";
 
 type AddBidInput = {
     userId: string;
     auctionId: string;
+    priceIncrement: number;
 };
 
 type BidResult = {
@@ -16,23 +16,19 @@ type BidResult = {
     updatedAt: Date;
 };
 
-const getBidsByAuctionId = async (_id: string): Promise<Array<BidResult>> => {
-    return await bids.find({ auctionId: _id });
-};
-
 const addBid = async (args: AddBidInput): Promise<BidResult | null> => {
-    const auction = await getAuctionById(args.auctionId);
-    if (!auction) {
-        return null;
-    }
+    const bidsCount = await bids.countDocuments({ auctionId: args.auctionId });
 
-    const auctionBids = await getBidsByAuctionId(args.auctionId);
     const amount =
-        auctionBids.length === 0
-            ? auction.priceIncrement
-            : auction.priceIncrement * (auctionBids.length + 1);
+        bidsCount === 0
+            ? args.priceIncrement
+            : args.priceIncrement * (bidsCount + 1);
 
-    return await bids.create({ ...args, amount });
+    return await bids.create({
+        auctionId: args.auctionId,
+        userId: args.userId,
+        amount,
+    });
 };
 
 export { addBid };

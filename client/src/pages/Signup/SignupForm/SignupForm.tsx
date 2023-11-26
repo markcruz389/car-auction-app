@@ -49,8 +49,10 @@ const SignupForm = () => {
 
     const onSubmit = (values: z.infer<typeof formSchema>) => {
         console.log(values);
+
+        form.reset();
         toast({
-            duration: 3000, // ms
+            duration: 3000,
             title: "Successfully created an account",
         });
     };

@@ -24,15 +24,12 @@ const getUserByEmail = async (
     return await users.findOne({ email }, { __v: 0 });
 };
 
-const createUser = async (
-    args: CreateUserInput
-): Promise<UserResult | undefined> => {
+const createUser = async (args: CreateUserInput): Promise<UserResult> => {
     const { password, ...data } = args;
-    console.log(password);
     const saltRounds = 10;
     const hash = await bcrypt.hash(password, saltRounds);
-    console.log(hash);
     const doc = await users.create({ ...data, password: hash });
+
     return { ...data, _id: doc._id };
 };
 

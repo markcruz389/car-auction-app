@@ -3,7 +3,8 @@ import cookieParser from "cookie-parser";
 
 import api from "./routes/v1";
 
-import errorHandler, { CustomError } from "./middlewares/errorHandler";
+import errorHandler from "./middlewares/errorHandler";
+import { errorResponse, ERROR_TYPE } from "./_utils/errorResponse";
 
 const app = express();
 
@@ -12,9 +13,15 @@ app.use(cookieParser());
 
 app.use("/api/v1", api);
 
-app.use("*", (req, _, next) => {
-    const error = new CustomError(404, `${req.baseUrl} not found`);
-    next(error);
+app.use("*", (req, res) => {
+    return errorResponse({
+        res,
+        statusCode: 404,
+        errorData: {
+            error: ERROR_TYPE.NOT_FOUND,
+            message: `${req.baseUrl} not found`,
+        },
+    });
 });
 
 app.use(errorHandler);

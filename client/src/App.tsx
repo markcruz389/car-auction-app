@@ -1,13 +1,16 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 import Login from "./pages/Login/Login";
 import Signup from "./pages/Signup/Signup";
 
+const queryClient = new QueryClient();
+
 function App() {
     return (
-        <div>
+        <QueryClientProvider client={queryClient}>
             <Router>
                 <Routes>
                     <Route path="/" element={<Navigate to="/login" />} />
@@ -26,7 +29,7 @@ function App() {
             </Router>
 
             <Toaster />
-        </div>
+        </QueryClientProvider>
     );
 }
 
