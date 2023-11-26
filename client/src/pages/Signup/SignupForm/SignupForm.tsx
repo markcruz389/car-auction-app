@@ -3,7 +3,7 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import {
     Card,
@@ -11,6 +11,7 @@ import {
     CardHeader,
     CardDescription,
     CardContent,
+    CardFooter,
 } from "@/components/ui/card";
 import {
     Form,
@@ -38,14 +39,8 @@ const formSchema = z
         message: "Passwords don't match",
         path: ["confirm"],
     });
-const API_BASE_URL = "http://localhost:8080/api/v1";
 
 type Schema = z.infer<typeof formSchema>;
-type RegisterErrorResponse = {
-    error: {
-        message: string;
-    };
-};
 
 const SignupForm = () => {
     const { toast } = useToast();
@@ -68,12 +63,15 @@ const SignupForm = () => {
         const { fullName, phone, email, password } = values;
 
         try {
-            await axios.post(`${API_BASE_URL}/auth/register`, {
-                fullName,
-                phone,
-                email,
-                password,
-            });
+            await axios.post(
+                `${import.meta.env.VITE_API_BASE_URL}/auth/register`,
+                {
+                    fullName,
+                    phone,
+                    email,
+                    password,
+                }
+            );
 
             form.reset();
             toast({
@@ -87,8 +85,7 @@ const SignupForm = () => {
                 "Unexpected Error Occured, try again later";
 
             if (axios.isAxiosError(error)) {
-                const axiosError: AxiosError<RegisterErrorResponse> = error;
-
+                const axiosError: AxiosError = error;
                 errorMsg = apiErrorHandler(axiosError);
             } else {
                 console.error("Non-Axios error occurred:", error);
@@ -193,7 +190,13 @@ const SignupForm = () => {
                         </form>
                     </fieldset>
                 </Form>
-            </CardContent>
+            </CardContent>{" "}
+            <CardFooter className="w-100 flex justify-center">
+                <div>
+                    <span>Already have an account?</span>{" "}
+                    <Link to="/login">Log-in</Link>
+                </div>
+            </CardFooter>
         </Card>
     );
 };
