@@ -1,5 +1,4 @@
 import express from "express";
-import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import api from "./routes/v1";
@@ -8,9 +7,8 @@ import { errorResponse, ERROR_TYPE } from "./_utils/errorResponse";
 
 const app = express();
 
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: process.env.CLIENT_ORIGIN }));
 app.use(express.json());
-app.use(cookieParser());
 
 app.use("/api/v1", api);
 
@@ -19,7 +17,7 @@ app.use("*", (req, res) => {
         res,
         statusCode: 404,
         errorData: {
-            error: ERROR_TYPE.NOT_FOUND,
+            type: ERROR_TYPE.NOT_FOUND,
             message: `${req.baseUrl} not found`,
         },
     });

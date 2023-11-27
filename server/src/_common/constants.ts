@@ -1,6 +1,5 @@
 import { AuctionStatus } from "../models/auction/auction.schema";
 import { UserRole } from "../models/user/user.schema";
-import { ErrorType } from "../_utils/errorResponse";
 
 const AUCTION_STATUS: Record<string, AuctionStatus> = {
     OPEN: "open",

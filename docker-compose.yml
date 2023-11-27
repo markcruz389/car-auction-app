@@ -38,8 +38,10 @@ services:
             - MONGODB_HOST=$MONGODB_HOST
             - MONGO_PORT=$MONGO_PORT
             - JWT_SECRET=$JWT_SECRET
+            - JWT_EXPIRES_IN=$JWT_EXPIRES_IN
             - REDIS_PORT=$REDIS_PORT
             - REDIS_HOST=$REDIS_HOST
+            - CLIENT_ORIGIN=$CLIENT_ORIGIN
         networks:
             - backend
             # - frontend

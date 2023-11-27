@@ -11,7 +11,7 @@ const inputValidationChecker = (
     if (!errors.isEmpty()) {
         const statusCode = 404;
         const errorData = {
-            error: ERROR_TYPE.BAD_REQUEST,
+            type: ERROR_TYPE.BAD_REQUEST,
             message: "Invalid input",
             errors: errors.array(),
         };

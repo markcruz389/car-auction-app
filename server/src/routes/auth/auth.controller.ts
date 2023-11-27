@@ -11,14 +11,13 @@ const failedLogin = (res: Response) => {
         res,
         statusCode: 401,
         errorData: {
-            error: ERROR_TYPE.UNAUTHORIZED,
+            type: ERROR_TYPE.UNAUTHORIZED,
             message: "Invalid username or password",
         },
     });
 };
 
 const httpGetLogout = (_: Request, res: Response) => {
-    res.clearCookie("access_token");
     return res.status(200).json({ message: "Logged out successfully" });
 };
 
@@ -31,7 +30,7 @@ const httpPostRegister = async (req: Request, res: Response) => {
             res,
             statusCode: 409,
             errorData: {
-                error: ERROR_TYPE.CONFLICT,
+                type: ERROR_TYPE.CONFLICT,
                 message: "Email already exists",
             },
         });
@@ -62,12 +61,11 @@ const httpPostLogin = async (req: Request, res: Response) => {
 
     const token = jwt.sign(
         { _id: user._id, roles: user.roles },
-        process.env.JWT_SECRET as string
+        process.env.JWT_SECRET as string,
+        { expiresIn: process.env.JWT_EXPIRES_IN }
     );
-    return res
-        .cookie("access_token", token, { httpOnly: true })
-        .status(200)
-        .json({ message: "Logged in successfully" });
+
+    return res.status(200).json({ data: { token } });
 };
 
 export { httpGetLogout, httpPostRegister, httpPostLogin };

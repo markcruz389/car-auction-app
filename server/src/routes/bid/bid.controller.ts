@@ -16,7 +16,7 @@ const httpPostBid = async (req: Request, res: Response) => {
             res,
             statusCode: 404,
             errorData: {
-                error: ERROR_TYPE.NOT_FOUND,
+                type: ERROR_TYPE.NOT_FOUND,
                 message: "Auction not found",
             },
         });

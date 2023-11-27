@@ -11,7 +11,7 @@ type ErrorType =
     | "Internal Server Error";
 
 type ErrorData = {
-    error: ErrorType;
+    type: ErrorType;
     message: string;
     errors?: Array<ValidationError>;
     stack?: string;
@@ -28,7 +28,7 @@ const ERROR_TYPE: Record<string, ErrorType> = {
     UNAUTHORIZED: "Unauthorized",
     FORBIDDER: "Forbidden",
     NOT_FOUND: "Not Found",
-    COFLICT: "Conflict",
+    CONFLICT: "Conflict",
     INTERNAL_SERVER_ERROR: "Internal Server Error",
 };
 Object.freeze(ERROR_TYPE);
@@ -43,7 +43,7 @@ const errorResponseServer = (res: Response) => {
         res,
         statusCode: 500,
         errorData: {
-            error: ERROR_TYPE.INTERNAL_SERVER_ERROR,
+            type: ERROR_TYPE.INTERNAL_SERVER_ERROR,
             message: "An unexpected error occured, Please try again later",
         },
     });

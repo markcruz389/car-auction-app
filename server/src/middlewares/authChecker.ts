@@ -3,12 +3,25 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 
 import { USER_ROLE } from "../_common/constants";
 import { IRequestWithUserId } from "../_common/types";
+import { ERROR_TYPE, errorResponse } from "../_utils/errorResponse";
 
-const unauthorized = (res: Response) => {
-    return res.status(401).json({ message: "Unauthorized" });
+const unauthenticated = (res: Response) => {
+    return errorResponse({
+        res,
+        statusCode: 401,
+        errorData: {
+            type: ERROR_TYPE.UNAUTHORIZED,
+            message: "User is not authenticated",
+        },
+    });
 };
 
-const decodeToken = (token: string | undefined) => {
+const decodeToken = (bearerToken: string | undefined) => {
+    if (!bearerToken) {
+        return null;
+    }
+
+    const token = bearerToken.replace("/^Bearer/", "");
     if (!token) {
         return null;
     }
@@ -23,36 +36,27 @@ const decodeToken = (token: string | undefined) => {
     }
 };
 
-const isLoggedInChecker = (req: Request, res: Response, next: NextFunction) => {
-    const decodedToken = decodeToken(req.cookies.access_token);
-    if (decodedToken) {
-        return res.status(400).json({ message: "Already logged in" });
-    }
-
-    next();
-};
-
 const isNotLoggedInChecker = (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    const decodedToken = decodeToken(req.cookies.access_token);
+    const decodedToken = decodeToken(req.headers.authorization);
     if (!decodedToken) {
-        return unauthorized(res);
+        return unauthenticated(res);
     }
 
     next();
 };
 
 const userAuthChecker = (req: Request, res: Response, next: NextFunction) => {
-    const decodedToken = decodeToken(req.cookies.access_token);
+    const decodedToken = decodeToken(req.headers.authorization);
     if (!decodedToken) {
-        return unauthorized(res);
+        return unauthenticated(res);
     }
 
     if (!decodedToken.roles.includes(USER_ROLE.USER)) {
-        return unauthorized(res);
+        return unauthenticated(res);
     }
 
     (req as IRequestWithUserId).userId = decodedToken._id;
@@ -60,21 +64,16 @@ const userAuthChecker = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const adminAuthChecker = (req: Request, res: Response, next: NextFunction) => {
-    const decodedToken = decodeToken(req.cookies.access_token);
+    const decodedToken = decodeToken(req.headers.authorization);
     if (!decodedToken) {
-        return unauthorized(res);
+        return unauthenticated(res);
     }
 
     if (!decodedToken.roles.includes(USER_ROLE.ADMIN)) {
-        return unauthorized(res);
+        return unauthenticated(res);
     }
 
     next();
 };
 
-export {
-    isLoggedInChecker,
-    isNotLoggedInChecker,
-    userAuthChecker,
-    adminAuthChecker,
-};
+export { isNotLoggedInChecker, userAuthChecker, adminAuthChecker };

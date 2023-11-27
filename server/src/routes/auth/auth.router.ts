@@ -7,10 +7,7 @@ import {
     httpPostLogin,
 } from "./auth.controller";
 import inputValidationChecker from "../../middlewares/inputValidationChecker";
-import {
-    isLoggedInChecker,
-    isNotLoggedInChecker,
-} from "../../middlewares/authChecker";
+import { isNotLoggedInChecker } from "../../middlewares/authChecker";
 
 const authRouter = express.Router();
 
@@ -23,7 +20,6 @@ authRouter.post(
 );
 authRouter.post(
     "/login",
-    isLoggedInChecker,
     loginValidator,
     inputValidationChecker,
     httpPostLogin

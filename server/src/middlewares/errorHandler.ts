@@ -41,7 +41,7 @@ const errorHandler = (
     const errMsg = err.message || "Something went wrong";
 
     const errorData = {
-        error: error,
+        type: error,
         message: errMsg,
         ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
     } as ErrorData;
