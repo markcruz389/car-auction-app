@@ -50,13 +50,10 @@ const LoginForm = () => {
         const { email, password } = values;
 
         try {
-            await axios.post(
-                `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
-                {
-                    email,
-                    password,
-                }
-            );
+            await axios.post(`http://localhost/api/v1/auth/login`, {
+                email,
+                password,
+            });
 
             form.reset();
             toast({

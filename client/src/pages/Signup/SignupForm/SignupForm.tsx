@@ -63,15 +63,12 @@ const SignupForm = () => {
         const { fullName, phone, email, password } = values;
 
         try {
-            await axios.post(
-                `${import.meta.env.VITE_API_BASE_URL}/auth/register`,
-                {
-                    fullName,
-                    phone,
-                    email,
-                    password,
-                }
-            );
+            await axios.post(`api/auth/register`, {
+                fullName,
+                phone,
+                email,
+                password,
+            });
 
             form.reset();
             toast({

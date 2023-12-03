@@ -4,6 +4,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { USER_ROLE } from "../_common/constants";
 import { IRequestWithUserId } from "../_common/types";
 import { ERROR_TYPE, errorResponse } from "../_utils/errorResponse";
+import { constructToken } from "../_utils/authToken";
 
 const unauthenticated = (res: Response) => {
     return errorResponse({
@@ -16,16 +17,17 @@ const unauthenticated = (res: Response) => {
     });
 };
 
-const decodeToken = (bearerToken: string | undefined) => {
-    if (!bearerToken) {
+const getToken = (req: Request): string | null => {
+    const payload = req.cookies.auth_data;
+    const signatureAndHeader = req.signedCookies.auth;
+    if (!payload || !signatureAndHeader) {
         return null;
     }
 
-    const token = bearerToken.replace("/^Bearer/", "");
-    if (!token) {
-        return null;
-    }
+    return constructToken(payload, signatureAndHeader);
+};
 
+const decodeToken = (token: string): jwt.JwtPayload | null => {
     try {
         return jwt.verify(
             token,
@@ -41,7 +43,12 @@ const isNotLoggedInChecker = (
     res: Response,
     next: NextFunction
 ) => {
-    const decodedToken = decodeToken(req.headers.authorization);
+    const token = getToken(req);
+    if (!token) {
+        return unauthenticated(res);
+    }
+
+    const decodedToken = decodeToken(token);
     if (!decodedToken) {
         return unauthenticated(res);
     }
@@ -50,7 +57,12 @@ const isNotLoggedInChecker = (
 };
 
 const userAuthChecker = (req: Request, res: Response, next: NextFunction) => {
-    const decodedToken = decodeToken(req.headers.authorization);
+    const token = getToken(req);
+    if (!token) {
+        return unauthenticated(res);
+    }
+
+    const decodedToken = decodeToken(token);
     if (!decodedToken) {
         return unauthenticated(res);
     }
@@ -64,7 +76,12 @@ const userAuthChecker = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const adminAuthChecker = (req: Request, res: Response, next: NextFunction) => {
-    const decodedToken = decodeToken(req.headers.authorization);
+    const token = getToken(req);
+    if (!token) {
+        return unauthenticated(res);
+    }
+
+    const decodedToken = decodeToken(token);
     if (!decodedToken) {
         return unauthenticated(res);
     }

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import SignupForm from "./SignupForm/SignupForm";
 
 const Signup = () => {

@@ -16,7 +16,7 @@ const NotFound = () => {
                 <CardHeader className="text-center">
                     <CardTitle className="lg:text-7xl text-4xl">404</CardTitle>
                     <CardDescription>
-                        The page you’re looking for doesn’t exist.
+                        The page you’re looking for doesn’t exists.
                     </CardDescription>
                 </CardHeader>
                 <CardFooter className="flex justify-center">

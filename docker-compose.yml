@@ -39,26 +39,39 @@ services:
             - MONGO_PORT=$MONGO_PORT
             - JWT_SECRET=$JWT_SECRET
             - JWT_EXPIRES_IN=$JWT_EXPIRES_IN
+            - COOKIE_SIGNATURE=$COOKIE_SIGNATURE
             - REDIS_PORT=$REDIS_PORT
             - REDIS_HOST=$REDIS_HOST
             - CLIENT_ORIGIN=$CLIENT_ORIGIN
         networks:
             - backend
-            # - frontend
+            - frontend
 
-    # client:
+    client:
+        depends_on:
+            - server
+        build:
+            context: ./client
+        ports:
+            - $CLIENT_LOCAL_PORT:$CLIENT_CONTAINER_PORT
+        environment:
+            - API_BASE_URL=$API_BASE_URL
+        networks:
+            - frontend
+
+    # nginx:
     #     depends_on:
-    #         - server
+    #         - api
+    #         - client
+    #     restart: always
     #     build:
-    #         context: ./client
+    #         context: ./nginx
     #     ports:
-    #         - $CLIENT_LOCAL_PORT:$CLIENT_CONTAINER_PORT
-    #     networks:
-    #         - frontend
+    #         - "3050:80"
 
 volumes:
     db:
 
 networks:
     backend:
-    # frontend:
+    frontend:
